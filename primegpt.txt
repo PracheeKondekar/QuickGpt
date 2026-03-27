@@ -1,0 +1,130 @@
+npm create vite@latest
+projectname client
+variant - javascipt
+cd client
+npm install
+npm install react-router-dom
+npm run dev
+delete app.css
+clear index.css
+clear app.jsx and write rafce 
+import {BrowserRouter} from 'react-router-dom' in main.jsx
+<BrowserRouter> 
+ <App />
+ </BrowserRouter>
+  copy all the assets images
+  -----created default react project
+
+create folder in src
+components,pages,context
+
+tailwind css in vite project
+npm install tailwindcss @tailwindcss/vite
+plugins: [
+    react(),
+    tailwindcss()
+  ],
+import tailwind css in index.css
+  import google fonts in index.css
+  @custom-variant dark (&:where(.dark, .dark *));
+
+*{
+    font-family: "Outfit", sans-serif;
+}
+@theme {
+    --color-primary: #e6ccff;
+}
+::-webkit-scrollbar {
+    display: none;
+}
+create files in pages 
+community,creadits,loading,login
+create files in components
+chatbox,message,sidebar
+
+import in app.jsx
+sidebar,community,credits,/
+
+context folder in src
+appcontext.jsx
+import { Children, createContext, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {dummyChats, dummyUserData} from "../assets/assets"
+
+const AppContext = createContext()
+
+export const AppContextProvider = ({ children }) =>{
+    const navigate = useNavigate()
+    const [user, setUser] = useState(null);
+    const [chats, setChats] = useState([]);
+    const [selectedChats, setSelectedChats] = useState(null);
+    const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+
+    const fetchUser = async()=>{
+        setUser(dummyUserData)
+    }
+    useEffect(()=>{
+        if(theme === 'dark'){
+            document.documentElement.classList.add('dark');
+        }else{
+            document.documentElement.classList.remove('dark'); 
+        }    },[theme])
+    useEffect(()=>{
+          if(user){
+            fetchUsersChats()
+          }
+          else{
+            setChats([])
+            setSelectedChats(null)
+          }
+    },[user])
+    useEffect (()=>{
+        fetchUser()
+    },[])
+    const fetchUsersChats = async()=>{
+        setChats(dummyChats)
+        setSelectedChats(dummyChats[0])
+    }
+    const value = {
+        navigate,user,setUser,chats,setChats,selectedChats,setSelectedChats,
+        theme
+    }
+    return (
+        <AppContext.Provider value={value} >
+            {children}
+        </AppContext.Provider>
+    )
+
+}
+ 
+export const useAppContext = ()=> useContext(AppContext)
+
+----design sidebar
+
+npm install moment
+import moment 
+moment--for timwstap converting
+1.00hr 
+npm install react-markdown
+---npm install prismjs
+prebuilt UI
+2.14.32
+backend----
+npm init -y
+$ npm install express cors
+ dotenv mongoose jsonwebtoken bcryptjs
+ $ npm install --save-dev nodemon
+
+database connection
+mongo atlas
+config db.js--coneect in server.js
+.env-MONGO_URL
+models- user.js
+3.00.11
+npm imagekit
+npm i openai
+4.05
+npm i stripe
+npm i svix
+4.40
+4.58
