@@ -128,3 +128,5 @@ npm i stripe
 npm i svix
 4.40
 4.58
+in client-npm i axios react-hot-toast
+5.35

@@ -41,6 +41,7 @@ export const getPlans = async(req, res) => {
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY) 
 const frontendUrl = process.env.FRONTEND_URL;
+
 //API Controller for purchasing a plan
 export const purchasePlan = async(req, res) => {
     try{
@@ -60,29 +61,7 @@ export const purchasePlan = async(req, res) => {
         isPaid: false
     })
     const {origin } = req.headers;
-//     const session = await stripe.checkout.sessions.create({
-    
-//     line_items: [
-//       {
-//       price_data: {
-//         currency:"usd",
-//         unit_amount: plan.price * 100,
-//         product_data:{
-//             name:plan.name
-//         }
-//       },
-//       //quantity:2,
-//       quantity: 1,
-//       },
-//     ],
-//     mode: 'payment',
-//     // success_url: `${origin}/loading`,
-//     // cancel_url: `${origin}`,
-//     success_url: `http://localhost:5173/loading`,
-// cancel_url: `http://localhost:5173`,
-//     metadata: {transactionId: transaction._id.toString(),appId:'quickgpt'} ,
-//     expires_at: Math.floor(Date.now() / 1000) + 30 *60,// session Expires in 30 min
-//     });
+
 const session = await stripe.checkout.sessions.create({
   line_items: [
     {
@@ -98,14 +77,14 @@ const session = await stripe.checkout.sessions.create({
   ],
   mode: 'payment',
  
- success_url: `${origin}/loading`,
+ success_url: `${origin}/loading?session_id={CHECKOUT_SESSION_ID}`,
  cancel_url: `${origin}`,
 
   metadata: {
     transactionId: transaction._id.toString(),
     appId: 'quickgpt'
   },
-  expires_at: Math.floor(Date.now() / 1000) + 30 * 60,
+ // expires_at: Math.floor(Date.now() / 1000) + 30 * 60,
 });
     res.json({success: true, url: session.url});
      
@@ -114,36 +93,38 @@ const session = await stripe.checkout.sessions.create({
     }
 }
 
-// export const purchasePlan = async (req, res) => {
-//   try {
-//     // Extract token from the incoming request header to pass it forward
-//     const token = req.headers.authorization.split(' ')[1];
-//     const { planId } = req.body; 
-//     // ... your logic to find the plan ...
 
-//     const session = await stripe.checkout.sessions.create({
-//       line_items: [
-//         {
-//           price_data: {
-//             currency: "usd",
-//             unit_amount: plan.price * 100,
-//             product_data: { name: plan.name },
-//           },
-//           quantity: 1,
-//         },
-//       ],
-//       mode: 'payment',
-//       // APPEND THE TOKEN HERE
-//       success_url: `${process.env.FRONTEND_URL}/loading?token=${token}`,
-//       cancel_url: `${process.env.FRONTEND_URL}`,
-//       metadata: {
-//         userId: req.user._id.toString(),
-//         planId: planId
-//       }
-//     });
+    // Get session from Stripe
+    // const session = await stripe.checkout.sessions.retrieve(session_id);
 
-//     res.json({ success: true, url: session.url });
-//   } catch (error) {
-//     res.json({ success: false, message: error.message });
-//   }
-// };
+    // if (session.payment_status === "paid") {
+    //   const transactionId = session.metadata.transactionId;
+
+    //   // Find transaction
+    //   const transaction = await Transaction.findById(transactionId);
+
+    //   if (!transaction) {
+    //     return res.json({ success: false, message: "Transaction not found" });
+    //   }
+
+    //   // Prevent duplicate updates
+    //   if (transaction.isPaid) {
+    //     return res.json({ success: true, message: "Already verified" });
+    //   }
+
+    //   // ✅ Mark as paid
+    //   transaction.isPaid = true;
+    //   await transaction.save();
+
+    //   // ✅ Add credits to user
+    //   await User.findByIdAndUpdate(transaction.userId, {
+    //     $inc: { credits: transaction.credits },
+    //   });
+
+    //   return res.json({ success: true });
+
+    // } else {
+    //   return res.json({ success: false, message: "Payment not completed" });
+    // }
+  
+

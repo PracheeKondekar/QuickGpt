@@ -2,14 +2,46 @@
 import React, {useState,useEffect} from 'react'
 import Loading from "./Loading"
 import { dummyPlans } from '../assets/assets'
-
+import { useAppContext } from '../context/AppContext'
+import {toast} from 'react-hot-toast'
 const Credits = () => {
   const[plans, setPlans] = useState([])
   const[loading, setLoading] = useState(true)
+  const {token, axios } = useAppContext()
+
   const fetchPlans = async() => {
-    setPlans(dummyPlans)
+    try{
+     const {data} = await axios.get('/api/credit/plans',
+      { headers: {Authorization: token}})
+     if(data.success){
+      setPlans(data.plans)
+     }
+     else{
+      toast.error(data.message || 'Failed to fetch plans')
+     }
+    } catch(error){
+     toast.error(error.message)
+    }
     setLoading(false)
   }
+
+  const purchasePlan = async(planId) => {
+    try{
+      const {data} = await axios.post('/api/credit/purchase', {planId},
+        {headers: {Authorization: token}})
+          if (data.success) {
+    setTimeout(() => {
+      window.location.href = data.url
+    }, 1000) // ⏳ allow toast to show
+  } else {
+    throw new Error(data.message)
+  }
+  // else{
+  //         toast.error(data.message )
+  //       }
+    }catch(error){
+      toast.error(error.message)
+    }}
   useEffect(() => {
     fetchPlans()
   },[])
@@ -39,9 +71,26 @@ const Credits = () => {
               <li key={index} className='text-gray-600 dark:text-purple-200 mb-2'>• {feature}</li>
             ))}</ul>
           </div>
-<button className='mt-6 bg-purple-600 font-medium py-2 rounded
+{/* <button onClick={() => toast.promise(purchasePlan(planId))
+  ,{loading:"...Processing"}
+} className='mt-6 bg-purple-600 font-medium py-2 rounded
  hover:bg-purple-700 active:bg-purple-800 text-white transition-colors
-  cursor-pointer'>Buy Now</button>
+  cursor-pointer'>Buy Now</button> */}
+  <button
+  onClick={() =>
+    toast.promise(
+      purchasePlan(plan._id),
+      {
+        loading: "Processing..."
+      }
+    )
+  }
+  className='mt-6 bg-purple-600 font-medium py-2 rounded
+  hover:bg-purple-700 active:bg-purple-800 text-white transition-colors
+  cursor-pointer'
+>
+  Buy Now
+</button>
         </div>
       ))}
    </div>
@@ -50,3 +99,22 @@ const Credits = () => {
 }
 
 export default Credits
+{/* <button
+  onClick={() =>
+    toast.promise(
+      purchasePlan(plan._id),
+      {
+        loading: "Processing...",
+        success: "Redirecting...",
+        error: "Failed to purchase"
+      }
+    )
+  }
+  className='mt-6 bg-purple-600 font-medium py-2 rounded
+  hover:bg-purple-700 active:bg-purple-800 text-white transition-colors
+  cursor-pointer'
+>
+  Buy Now
+</button>
+
+export default Credits */}
